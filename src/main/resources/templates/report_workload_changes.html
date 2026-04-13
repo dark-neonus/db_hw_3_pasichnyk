@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report: Workload Change Audit</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Report: Workload Change Audit</h2>
+        <button class="no-print btn-print" onclick="window.print()">Generate Report</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Assistantship ID</th>
+                    <th>Change Date</th>
+                    <th>Old Hours</th>
+                    <th>New Hours</th>
+                    <th>Reason</th>
+                    <th>Changed By</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${report}">
+                    <td th:text="${r.assistantship_id}"></td>
+                    <td th:text="${r.change_date}"></td>
+                    <td th:text="${r.old_hours}"></td>
+                    <td th:text="${r.new_hours}"></td>
+                    <td th:text="${r.reason}"></td>
+                    <td th:text="${r.changed_by}"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <a class="btn-back no-print" href="/">Back to Menu</a>
+    </div>
+</body>
+</html>

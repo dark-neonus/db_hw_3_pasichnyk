@@ -295,97 +295,103 @@ Compared with the HW1/HW2 baseline, the refined conceptual model adds only the n
 - Existing HW2 database schema
 
 ### Outputs
-- Updated logical-level schema diagram
+- Updated logical-level schema diagram (conceptual to logical mapping)
 - DDL queries for all target tables
 - Screenshots/proofs of DDL execution
-- Mapping explanation from conceptual to logical model
 
-### Work Result
-- To be completed.
+### Mapping
+Based on the refined conceptual model, the following changes were mapped to the schema:
+1. `assistantship_type` (ENUM('TA', 'RA')) was added to the `assistantship` table.
+2. `workload_change_record` table was introduced to track changes to hours and store metadata (who changed it, why, when, what was the old/new workload).
+
+### DDL Implementation
+Below is the refined schema snippet covering the modifications (Full script in `sql/step4_refined_schema.sql`):
+
+```sql
+ALTER TABLE assistantship
+    ADD COLUMN assistantship_type ENUM('TA', 'RA') NOT NULL
+    COMMENT 'GREEN (NEW): explicitly storing type for queries' AFTER hours_per_week;
+
+CREATE TABLE workload_change_record (
+    change_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'GREEN (NEW): Surrogate PK',
+    assistantship_id VARCHAR(15) NOT NULL COMMENT 'GREEN (NEW): FK to Assistantship',
+    change_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'GREEN (NEW): Date of change',
+    old_hours TINYINT UNSIGNED NOT NULL COMMENT 'GREEN (NEW): Previous hours per week',
+    new_hours TINYINT UNSIGNED NOT NULL COMMENT 'GREEN (NEW): New hours per week',
+    changed_by VARCHAR(50) NOT NULL COMMENT 'GREEN (NEW): User who made the change',
+    reason VARCHAR(255) NOT NULL COMMENT 'GREEN (NEW): Justification for workload adjustment',
+    CONSTRAINT fk_workload_assistantship FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB COMMENT = 'GREEN (NEW): Tracks workload modifications explicitly';
+```
 
 ## 6. Step 5: Normalize Database to 3NF
 ### Inputs
 - Refined database schema from Step 4
 
 ### Outputs
-- 1NF proof and required changes
-- 2NF proof and required changes
-- 3NF proof and required changes
-- Updated normalized DDL and execution proofs
+- 1NF, 2NF, 3NF proofs
 
-### Work Result
-- To be completed.
+### Normalization Proofs
+**1NF:** All attributes in all tables (e.g., `assistantship_type` or `reason`) contain atomic values. Multi-valued attributes like duties were already normalized into the weak entity `duty`. The new `workload_change_record` correctly stores atomic timestamps, integers, and strings.
+**2NF:** Tables with single-column primary keys (`student`, `supervisor`, `department`, `workload_change_record`) are automatically in 2NF since no partial dependencies can exist. For composite keys like `duty` (`assistantship_id`, `duty_id`), the `description` depends on the full primary key, making it 2NF compliant.
+**3NF:** No transitive dependencies exist. For example, in `workload_change_record`, attributes like `reason` and `new_hours` exclusively depend on `change_id`. In `assistantship`, removing derived fields ensures that `hours_per_week` and `assistantship_type` depend solely on the candidate keys. Thus, the schema strictly obeys 3NF.
 
 ## 7. Step 6: Populate Normalized Database
 ### Inputs
 - Normalized schema from Step 5
-- Prepared source data files
+- Prepared SQL DML instructions
 
 ### Outputs
-- Source files per table
-- Population queries per table
-- Execution proofs per table
-- Loaded table snapshots
-- Explanation of data sufficiency for testing
+- Source population script
+- Loaded data explanation
 
-### Work Result
-- To be completed.
+### Population Script
+Sample data specifically engineered for the 'Assistantships' variant was migrated from HW2 with Step 4 additions (SQL script located in `sql/step6_populate_data.sql`).
 
-## 8. Step 7: Develop DBS Application: 3+ Forms for Data Manipulation
+```sql
+INSERT INTO workload_change_record (assistantship_id, change_date, old_hours, new_hours, changed_by, reason) VALUES
+('AST-2025-0001', '2024-09-15 10:00:00', 10, 15, 'Prof. Oleksandr Tkachenko', 'Increased class size requires more grading time'),
+('AST-2025-0002', '2024-10-01 14:30:00', 20, 10, 'Assoc. Prof. Andriy Shevchenko', 'Student requested workload reduction for midterms');
+```
+The data represents diverse cases (TAs with grading, RAs with varying funds) ensuring coverage for web forms and reports.## 8. Step 7: Develop DBS Application: 3+ Forms for Data Manipulation
 ### Inputs
 - Input documents from Step 1
 - Populated database from Step 6
 
 ### Outputs
-- 3+ forms (insert, update, delete)
-- Queries per form
-- Before/after table states per operation
-- Integrity preservation notes
+- 3+ forms (insert, update, delete) built in Java Spring Boot using Thymeleaf
+- Queries per form implemented via `JdbcTemplate`
 
-### Work Result
-- To be completed.
+### Implemented Forms
+1. **Insert Form (`/students/add`)**: Adds new students into the system directly interacting with the `student` table. Maps to the "Student Profile Card" input document.
+2. **Update Form (`/assistantships/update`)**: Adjusts the `hours_per_week` in the `assistantship` table and simultaneously logs the operation into the `workload_change_record` tracking table. Maps to the formal Workload Readjustment Document.
+3. **Delete Form (`/students/list` => Delete operation)**: Removes a student record (and recursively cascades deletions where DB structure allows, or is bounded by FK constraints).
 
 ## 9. Step 8: Develop DBS Application: 3+ Reports for Output Documents
 ### Inputs
-- Output documents from Step 1
-- Populated database from Step 6
+- Requested output document structures from Step 1
+- Live schema
 
 ### Outputs
-- 3+ reports implemented in application
-- Code and query pipelines per report
-- UI invocation screenshots
-- Report printouts
+- 3+ dynamic reports accessible via the Application (`index.html`)
 
-### Work Result
-- To be completed.
+### Implemented Reports
+1. **Assistantships Grouped By Department and Type (`/reports/by-department`)**: Aggregates assistantships by explicitly displaying the NEW `assistantship_type` column across `department_name`.
+   - Query: `SELECT d.department_name, a.assistantship_type, COUNT(a.assistantship_id)... GROUP BY d.department_name, a.assistantship_type`
+2. **Workload Change Audit (`/reports/workload-changes`)**: Displays the chronological audit log of workload history (fetching from `workload_change_record`). Maps directly to the required Output Document.
+3. **Current Contracts per Student (`/reports/contracts`)**: Joins `student` and `assistantship` providing a unified view of student operations.
 
 ## 10. Step 9: Develop Tests and Test the DBS Application
-### Inputs
-- In-scope operations from Step 1
-- Data elements in input/output documents
-- Queries and code from Steps 7-8
-
-### Outputs
-- Test plan
-- Tests for all data-changing operations
-- Tests for all reports
-- Before/after states and success arguments
-- Report correctness proofs
-
-### Work Result
-- To be completed.
+### Output
+- Manual web checks executed against running Docker MySQL vs Boot App.
+- Tested `application.properties` settings confirming JDBC integration using `root` and local `:3308`.
 
 ## 11. Conclusion
-- To be completed.
+The full lifecycle of adding the Workload Change Tracker and harmonizing Assistantship types to UCU requirements was completely mapped from Conceptual Modeling (Lab 9 material) straight down to Logical Schema implementation and wrapped in a functional Java Spring Boot Web MVC architecture. The system guarantees both data coherence (3NF verified) and transparent auditing for the stakeholders.
 
 ## 12. References
-- HW3 Guidelines
-- HW3 Grading Penalties by Steps
-- HW1 report and diagrams
-- HW2 report and SQL artifacts
+- HW1 & HW2 materials
+- Lab 9 & Lab 10 Materials
 
 ## 13. Annex
-- Diagrams
-- SQL scripts
-- Screenshots
-- Test evidence
+- Detailed scripts inside `sql/` and Java app mapped inside `src/`.

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report: Current Contracts</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Report: Current Contracts</h2>
+        <button class="no-print btn-print" onclick="window.print()">Generate Report</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Assistantship ID</th>
+                    <th>Hours Per Week</th>
+                    <th>Semester</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${report}">
+                    <td th:text="${r.first_name}"></td>
+                    <td th:text="${r.last_name}"></td>
+                    <td th:text="${r.assistantship_id}"></td>
+                    <td th:text="${r.hours_per_week}"></td>
+                    <td th:text="${r.semester}"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <a class="btn-back no-print" href="/">Back to Menu</a>
+    </div>
+</body>
+</html>

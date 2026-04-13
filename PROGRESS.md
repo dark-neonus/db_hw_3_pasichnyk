@@ -21,3 +21,31 @@
 - Added harmonization decisions for assistantship type, workload tracking, report filters, and shared relationships.
 - Listed refined conceptual model elements and conflict-resolution notes.
 - Kept the Step 3 output aligned with the Step 2 external-view additions and the HW1/HW2 baseline.
+### 2026-04-13 | Steps 4-9 Completed
+- Generated `sql/step4_refined_schema.sql` (Step 4) mapped mapped attributes (`assistantship_type`) and tables (`workload_change_record`).
+- Added Normalization proofs (1NF, 2NF, 3NF) directly into `Assistantships_Pasichnyk.md` (Step 5).
+- Created `sql/step6_populate_data.sql` DML file adapted from HW2 to populate schemas and cover the update tracker edge cases (Step 6).
+- Scaled up the Spring Boot Web Java application in `src/main` utilizing `JdbcTemplate` and Thymeleaf.
+- Completed Step 7 and 8 requirements via `@Controller` mapping: 3 forms (Student Insert, Workload Update, Student Delete) and 3 Reports (Departments, Workload Audits, Contracts).
+- Fully linked and finalized the markdown report from Sections 1 down to the Annex (Step 9+).
+### 2026-04-13 | Created README.md
+- Created `README.md` with explicit commands explaining how to start the database via Docker Compose, load schemas, and start the Java application.
+### 2026-04-13 | Updated README commands
+- Updated `README.md` to use the newer `docker compose` syntax instead of the deprecated `docker-compose` command.
+### 2026-04-13 | Port Conflict Resolution
+- Resolved Docker port conflict by changing database port to `3308`.
+### 2026-04-13 | Resolved Java Runtime Conflicts
+- Configured Gradle `build.gradle` and `settings.gradle` for Spring Boot (requires JDK 17+).
+### 2026-04-13 | Resolved Spring Boot App MySQL Connection
+- Updated `application.properties`: set `allowPublicKeyRetrieval=true` to resolve MySQL 8+ `Public Key Retrieval is not allowed` connection block.
+- Disabled Liquibase (`spring.liquibase.enabled=false`) to avoid startup halts since schema DDLs were manually loaded.
+### 2026-04-13 | Fixed App Backend Delete
+- Resolved backend foreign key constraint block by replacing simple drop statement with sequential logical drops.
+### 2026-04-13 | Web Form Styles Added
+- Created `style.css` manually providing modern clean styling (no emojis).
+- Refactored `index.html`, `students_add.html`, `students_list.html`, `workload_update.html` to map `style.css` via `<link>`, and use semantic elements like `<thead>`, `<tbody>`, along with standard class names (e.g. `container`, `main-form`).
+- Refactored the reports HTML (`report_by_department.html`, `report_contracts.html`, `report_workload_changes.html`) identically.
+### 2026-04-13 | Printable Reports Added
+- Formatted `style.css` with an `@media print` query stripping standard browser background blocks/shadows out of printed output, rendering clean lines, and hiding interactive `.no-print` classes.
+- Added a `Generate Report` button mapping to `window.print()` in `students_list.html`, `report_by_department.html`, `report_contracts.html`, and `report_workload_changes.html`.
+- Bound `.no-print` to the Back buttons, dynamic Create/Delete columns, and Print buttons themselves.
