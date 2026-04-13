@@ -119,6 +119,7 @@ Step 1 is grounded in the existing Assistantships model and implemented schema:
 ### Inputs
 - Stakeholders and documents from Step 1
 - Existing conceptual model from HW1/HW2
+- Existing HW2 schema as the concrete baseline for current stored elements
 
 ### Outputs
 - External view per in-scope stakeholder
@@ -126,8 +127,102 @@ Step 1 is grounded in the existing Assistantships model and implemented schema:
 - New elements marked green in each external view
 - Change requirements and modeling explanations
 
-### Work Result
-- To be completed.
+### 3.1 Purpose of the step
+The purpose of Step 2 is to specialize the common Assistantships conceptual model for each in-scope stakeholder. Each external view contains only the information needed by that stakeholder, while keeping the shared core entities that already exist in the HW1/HW2 model. New stakeholder-specific data objects are added only when they are required by the input and output documents selected in Step 1.
+
+### 3.2 External view for the Department Coordinator
+#### Stakeholder role
+The Department Coordinator creates and maintains assistantship records and checks whether a student, supervisor, and department are linked correctly before an assistantship is accepted into the system.
+
+#### Relevant input documents
+- Assistantship Registration Form
+- Student Profile Card
+
+#### Relevant output documents
+- Assistantship Assignment Sheet
+
+#### Required model elements in the view
+- Student
+- Supervisor
+- Department
+- Assistantship
+- Teaching_Assistantship
+- Research_Assistantship
+
+#### Change requirements
+1. Keep the core HW2 entities Student, Supervisor, Department, and Assistantship.
+2. Keep the specialization of Assistantship into Teaching_Assistantship and Research_Assistantship because the registration form must distinguish between the two assistantship types.
+3. Add a type discriminator for assistantship category if needed by the final refined model.
+4. Preserve the links from Assistantship to Student, Supervisor, and Department because the coordinator needs to register these assignments in a single transaction.
+
+#### Input CM fragment and external-view change
+- Obsolete elements in the input fragment: none are removed from the shared core for this stakeholder.
+- New elements in the external view: assistantship type support needed for the registration form and assignment sheet.
+
+### 3.3 External view for the Supervisor
+#### Stakeholder role
+The Supervisor validates assistantship workload changes and checks whether the assigned duties match the approved workload.
+
+#### Relevant input documents
+- Assistantship Change Request
+
+#### Relevant output documents
+- Workload Change Log
+
+#### Required model elements in the view
+- Assistantship
+- Duty
+- Supervisor
+- Student
+- Department
+
+#### Change requirements
+1. Keep Assistantship, Duty, Supervisor, Student, and Department because workload changes are evaluated against the existing assignment context.
+2. Add an operation-oriented structure for change tracking so that workload updates can be documented as a history item.
+3. Add workload-specific attributes needed for before/after comparison of hours per week.
+4. Keep the supervisor-related foreign key path so that the change can be traced to the approving or requesting supervisor.
+
+#### Input CM fragment and external-view change
+- Obsolete elements in the input fragment: none of the core entities are removed.
+- New elements in the external view: workload change tracking attributes and request-oriented record structure.
+
+### 3.4 External view for the Program Administrator
+#### Stakeholder role
+The Program Administrator analyzes the distribution of assistantships across departments, supervisors, semesters, and assistantship types.
+
+#### Relevant input documents
+- Report Filter Request
+
+#### Relevant output documents
+- Assistantship Allocation Summary
+- Supervisor Load Summary
+
+#### Required model elements in the view
+- Assistantship
+- Student
+- Supervisor
+- Department
+- Teaching_Assistantship
+- Research_Assistantship
+
+#### Change requirements
+1. Preserve the existing relational links needed for aggregation by semester, department, and supervisor.
+2. Add summary-oriented attributes only if they are not derivable directly from the existing schema.
+3. Keep the assistantship type distinction because the reports need to group assignments by operational category.
+4. Do not duplicate stored data that can be derived from the current schema.
+
+#### Input CM fragment and external-view change
+- Obsolete elements in the input fragment: none are removed from the shared core.
+- New elements in the external view: report filter support and summary-oriented reporting requirements.
+
+### 3.5 Common additions across external views
+The following additions are required across stakeholder views because they are directly implied by Step 1:
+- Assistantship type handling for teaching and research assistantships.
+- Workload change tracking for update operations.
+- Report filtering support for aggregated summaries.
+
+### 3.6 Step 2 output statement
+The external views for the Department Coordinator, Supervisor, and Program Administrator together define the stakeholder-specific changes that will be merged in Step 3. The refined conceptual model will keep the shared core from HW1/HW2 and will absorb the new request, workload, and reporting needs without duplicating stored data.
 
 ## 4. Step 3: Harmonize External Views in a Refined Conceptual Model
 ### Inputs
@@ -138,8 +233,61 @@ Step 1 is grounded in the existing Assistantships model and implemented schema:
 - Conflict resolution notes
 - Input vs refined model comparison (red obsolete, green new)
 
-### Work Result
-- To be completed.
+### 4.1 Purpose of the step
+This step merges the stakeholder-specific external views into one refined conceptual model. The result must keep every element required by the external views while removing duplication and resolving any differences in naming, grain, or ownership of the new data objects introduced in Step 2.
+
+### 4.2 Inputs used for harmonization
+The harmonization is based on the following inputs:
+- Shared core from HW1/HW2: Student, Supervisor, Department, Assistantship, Duty, Teaching_Assistantship, Research_Assistantship.
+- Coordinator-specific additions: assistantship type handling in the registration flow.
+- Supervisor-specific additions: workload change tracking.
+- Program Administrator-specific additions: report filtering and summary generation.
+
+### 4.3 Harmonization decisions
+1. Assistantship type is kept as a single concept, not duplicated per stakeholder.
+- Decision: use the existing Teaching_Assistantship and Research_Assistantship specializations together with a common Assistantship parent.
+- Reason: both the coordinator and the administrator need the distinction, but the distinction describes one shared business concept.
+
+2. Workload change tracking is represented as one operational concept.
+- Decision: introduce a single change-tracking structure for workload updates instead of separate structures for each stakeholder.
+- Reason: the supervisor and coordinator both refer to the same update history.
+
+3. Report filters are not stored as business data.
+- Decision: keep report filter values as query parameters, not as permanent entities.
+- Reason: filters are execution-time inputs for summary generation, not persistent domain data.
+
+4. Shared core relationships are preserved.
+- Decision: keep the existing links Assistantship -> Student, Assistantship -> Supervisor, and Assistantship -> Department.
+- Reason: these links are required by registration, updates, and reports.
+
+5. No conflicting new entity names were introduced.
+- Decision: retain the naming already used in HW2 for the stored domain entities and use the same naming in the refined conceptual model.
+- Reason: this avoids unnecessary schema churn and keeps the model consistent with the implemented relational schema.
+
+### 4.4 Refined conceptual model content
+The refined conceptual model contains the following elements:
+- Student
+- Supervisor
+- Department
+- Assistantship
+- Duty
+- Teaching_Assistantship
+- Research_Assistantship
+- WorkloadChangeRecord
+
+The refined model also supports derived or report-time information without storing it as separate persistent entities:
+- assistantship type summaries
+- allocation summaries by semester and department
+- supervisor load summaries
+
+### 4.5 Conflict resolution notes
+The external views do not introduce hard conflicts that require redesign of the shared core. The only harmonization work is the consolidation of stakeholder-specific additions into one model:
+- assistantship type remains a specialization concern;
+- workload history becomes one change-tracking entity/structure;
+- reporting filters remain transient query parameters.
+
+### 4.6 Comparison statement
+Compared with the HW1/HW2 baseline, the refined conceptual model adds only the new elements required by Step 1 documents and keeps the obsolete or unused data out of the persistent domain model. This prepares the model for schema refinement in Step 4.
 
 ## 5. Step 4: Refine Database Schema
 ### Inputs
