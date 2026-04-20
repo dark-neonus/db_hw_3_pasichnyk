@@ -1,0 +1,6 @@
+student_id	int unsigned	NO	PRI	NULL	auto_increment
+first_name	varchar(50)	NO		NULL	
+last_name	varchar(50)	NO		NULL	
+email	varchar(100)	NO	UNI	NULL	
+enrollment_date	date	NO		NULL	
+program	varchar(100)	NO		NULL	

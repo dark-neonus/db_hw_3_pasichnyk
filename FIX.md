@@ -1,11 +1,3 @@
-# Fix Log
-
-## Rules
-- Add a new section for each fix.
-- Keep entries short: issue, correction, prevention.
-
-## 2026-04-13 | Initialization
-- No fixes yet.
 # FIX Log
 
 ## 2026-04-13
@@ -51,3 +43,33 @@
 - **Issue:** A residual injected prompt sentence and a full duplicate stale report remained in `Assistantships_Pasichnyk.md`.
 - **Correction:** Removed the injected sentence and trimmed the duplicated tail, leaving one canonical report artifact.
 - **Prevention:** Before submission, run a contamination scan (`rg`) and verify there is only one top-level report header.
+
+### 2026-04-20 | Missing Per-Table Step 4/6 Visual Proofs
+- **Issue:** Step 4 and Step 6 had textual evidence only; grading penalties are applied per missing table-level execution/result proof.
+- **Correction:** Re-ran schema/population scripts, collected raw outputs (`evidence/step4`, `evidence/step6`), and generated per-table screenshots in `screenshots/step4/` and `screenshots/step6/`.
+- **Prevention:** For every table in Step 4/6, keep a 1:1 mapping: query/data block -> execution output -> screenshot referenced in the report.
+
+### 2026-04-20 | Missing Repository URL in Report
+- **Issue:** `Assistantships_Pasichnyk.md` did not include the required repository URL.
+- **Correction:** Added repository URL `https://github.com/dark-neonus/db_hw_3_pasichnyk` in Introduction and References.
+- **Prevention:** Keep a final checklist item for mandatory metadata fields (variant, author, repo URL).
+
+### 2026-04-20 | Conclusion Section Absent
+- **Issue:** Report had Summary but no explicit Conclusion heading, risking the Introduction/Conclusion penalty.
+- **Correction:** Added a dedicated `Conclusion` section and updated Table of Contents numbering.
+- **Prevention:** Verify both `Introduction` and `Conclusion` headings exist before final grading pass.
+
+### 2026-04-20 | Repository Structure Pollution
+- **Issue:** A nested clone directory `db-hw-3-template` existed inside the submission repository and could confuse structure checks.
+- **Correction:** Removed nested clone and updated `.gitignore` rules.
+- **Prevention:** Keep template repos outside submission folders; allow only assignment artifacts in the repo tree.
+
+### 2026-04-20 | Step 9 Runner Not Executable
+- **Issue:** `sql/step9_run_tests.sh` failed when invoked directly due missing executable bit.
+- **Correction:** Set executable permission (`chmod +x`) and re-ran tests to refresh `sql/step9_test_execution.log`.
+- **Prevention:** Validate executable flags on all shell scripts included in report instructions.
+
+### 2026-04-20 | Step 4/5 Rubric Hardening in Report
+- **Issue:** Step 4 referenced DDL files but did not inline every target-table DDL query in the report; Step 5 lacked explicit visual before/after schema fragments for NF transitions.
+- **Correction:** Added explicit `CREATE TABLE` queries for all 8 target tables in Step 4 and added 1NF/2NF/3NF mermaid fragments showing source vs resulting schema structures.
+- **Prevention:** Keep rubric-required evidence directly in the report (not only linked artifacts) when a criterion is phrased as “presented in the report”.

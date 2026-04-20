@@ -33,6 +33,11 @@ docker exec -i assistantships-db-hw-3-mysql mysql -uroot -psecret < sql/step6_po
 ### 5. Open UI
 Go to `http://localhost:8080/`.
 
+### 6. Run Step 9 Tests (Optional, Reproducible)
+```bash
+./sql/step9_run_tests.sh > sql/step9_test_execution.log 2>&1
+```
+
 ## Main HW3 Artifacts
 
 ### Report and Tracking
@@ -50,8 +55,14 @@ Go to `http://localhost:8080/`.
 - `sql/step9_test_execution.log` - captured Step 9 run output
 
 ### UI Evidence
+- `screenshots/step4/` - per-table DDL execution proofs
+- `screenshots/step6/` - per-table population proofs
 - `screenshots/step7/` - before/after screenshots for forms
 - `screenshots/step8/` - report invocation and printout screenshots
+
+### Raw Execution Evidence
+- `evidence/step4/` - `SHOW TABLES` and per-table `DESCRIBE` outputs
+- `evidence/step6/` - per-table counts and sample rows after load
 
 ## Shutdown
 To stop the app, use `Ctrl+C` in its terminal.

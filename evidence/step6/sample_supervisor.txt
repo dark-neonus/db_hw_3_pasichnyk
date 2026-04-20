@@ -1,0 +1,5 @@
+1	Oleksandr	Tkachenko	Prof.	oleksandr.tkachenko@ucu.edu.ua	1
+2	Mariya	Kovalchuk	Dr.	mariya.kovalchuk@ucu.edu.ua	1
+3	Andriy	Shevchenko	Assoc. Prof.	andriy.shevchenko@ucu.edu.ua	2
+4	Nataliya	Bondar	Prof.	nataliya.bondar@ucu.edu.ua	3
+5	Serhiy	Melnyk	Dr.	serhiy.melnyk@ucu.edu.ua	4

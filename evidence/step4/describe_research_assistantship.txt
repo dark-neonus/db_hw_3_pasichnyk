@@ -1,0 +1,4 @@
+assistantship_id	varchar(15)	NO	PRI	NULL	
+project_name	varchar(150)	NO		NULL	
+research_topic	varchar(255)	NO		NULL	
+grant_funded	tinyint(1)	NO		0	

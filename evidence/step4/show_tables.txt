@@ -1,0 +1,8 @@
+assistantship
+department
+duty
+research_assistantship
+student
+supervisor
+teaching_assistantship
+workload_change_record

@@ -17,13 +17,16 @@ Date: 2026-04-13
 9. Step 8: Develop DBS Application: 3+ Reports for Output Documents
 10. Step 9: Develop Tests and Test the DBS Application
 11. Summary
-12. References
-13. Annex
+12. Conclusion
+13. References
+14. Annex
 
 ## 1. Introduction
 This report documents the full HW3 workflow for the Assistantships variant: scoping, external views, harmonized conceptual model, refined schema, normalization proofs, database population, application forms and reports, and end-to-end testing.
 
 The work is aligned to HW3 guidelines and grading penalties, with explicit Inputs/Outputs per step and reproducible evidence files in the repository.
+
+Repository: https://github.com/dark-neonus/db_hw_3_pasichnyk
 
 ## 2. Step 1: Specify In-Scope Stakeholders, Tasks, Input and Output Documents
 ### Inputs
@@ -136,8 +139,8 @@ erDiagram
 ```
 
 #### Data Objects Alignment
-- Input docs used: Assistantship Registration Form, Student Profile Card.
-- Output doc produced: Assistantship Assignment Sheet.
+- Input docs used: Assistantship Registration Form, Student Profile Card, Assistantship Termination Request.
+- Output docs produced: Assistantship Assignment Sheet, Deletion Confirmation Record.
 
 ### 3.2 External View: Supervisor
 #### Input CM Fragment (with obsolete-for-view elements)
@@ -270,55 +273,173 @@ erDiagram
 | Workload change history (new) | workload_change_record | New table with FK to assistantship |
 
 ### 5.2 DDL Queries per Target Table
-All DDL queries are provided in full in `sql/step4_refined_schema.sql`.
+Exact DDL queries (implemented in `sql/step4_refined_schema.sql`) are listed below per target table.
 
+1. `department`
 ```sql
-CREATE TABLE department (...);
-CREATE TABLE supervisor (... FOREIGN KEY (department_id) REFERENCES department(department_id));
-CREATE TABLE student (...);
-CREATE TABLE assistantship (... assistantship_type ENUM('TA','RA') ...
-  FOREIGN KEY (student_id) REFERENCES student(student_id)
-  FOREIGN KEY (supervisor_id) REFERENCES supervisor(supervisor_id)
-  FOREIGN KEY (department_id) REFERENCES department(department_id));
-CREATE TABLE duty (... PRIMARY KEY (assistantship_id, duty_id)
-  FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id));
-CREATE TABLE teaching_assistantship (... PRIMARY KEY (assistantship_id)
-  FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id));
-CREATE TABLE research_assistantship (... PRIMARY KEY (assistantship_id)
-  FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id));
-CREATE TABLE workload_change_record (... PRIMARY KEY (change_id)
-  FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id));
+CREATE TABLE department
+(
+  department_id   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  department_name VARCHAR(100) NOT NULL,
+  faculty_name    VARCHAR(100) NOT NULL
+) ENGINE = InnoDB;
+```
+
+2. `supervisor`
+```sql
+CREATE TABLE supervisor
+(
+  supervisor_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  first_name    VARCHAR(50) NOT NULL,
+  last_name     VARCHAR(50) NOT NULL,
+  title         VARCHAR(20) NOT NULL,
+  email         VARCHAR(100) NOT NULL UNIQUE,
+  department_id INT UNSIGNED NOT NULL,
+  CONSTRAINT fk_supervisor_department
+    FOREIGN KEY (department_id) REFERENCES department(department_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE = InnoDB;
+```
+
+3. `student`
+```sql
+CREATE TABLE student
+(
+  student_id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  first_name      VARCHAR(50) NOT NULL,
+  last_name       VARCHAR(50) NOT NULL,
+  email           VARCHAR(100) NOT NULL UNIQUE,
+  enrollment_date DATE NOT NULL,
+  program         VARCHAR(100) NOT NULL
+) ENGINE = InnoDB;
+```
+
+4. `assistantship`
+```sql
+CREATE TABLE assistantship
+(
+  assistantship_id    VARCHAR(15) NOT NULL PRIMARY KEY,
+  registration_number VARCHAR(20) NOT NULL UNIQUE,
+  semester            ENUM('Fall', 'Spring', 'Summer') NOT NULL,
+  academic_year       VARCHAR(9) NOT NULL,
+  hours_per_week      TINYINT UNSIGNED NOT NULL,
+  assistantship_type  ENUM('TA', 'RA') NOT NULL,
+  student_id          INT UNSIGNED NOT NULL,
+  supervisor_id       INT UNSIGNED NOT NULL,
+  department_id       INT UNSIGNED NOT NULL,
+  CONSTRAINT fk_assistantship_student
+    FOREIGN KEY (student_id) REFERENCES student(student_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_assistantship_supervisor
+    FOREIGN KEY (supervisor_id) REFERENCES supervisor(supervisor_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_assistantship_department
+    FOREIGN KEY (department_id) REFERENCES department(department_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE = InnoDB;
+```
+
+5. `duty`
+```sql
+CREATE TABLE duty
+(
+  assistantship_id VARCHAR(15) NOT NULL,
+  duty_id          SMALLINT UNSIGNED NOT NULL,
+  description      VARCHAR(255) NOT NULL,
+  PRIMARY KEY (assistantship_id, duty_id),
+  CONSTRAINT fk_duty_assistantship
+    FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB;
+```
+
+6. `teaching_assistantship`
+```sql
+CREATE TABLE teaching_assistantship
+(
+  assistantship_id       VARCHAR(15) NOT NULL PRIMARY KEY,
+  course_code            VARCHAR(20) NOT NULL,
+  course_name            VARCHAR(100) NOT NULL,
+  grading_responsibility BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_ta_assistantship
+    FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB;
+```
+
+7. `research_assistantship`
+```sql
+CREATE TABLE research_assistantship
+(
+  assistantship_id VARCHAR(15) NOT NULL PRIMARY KEY,
+  project_name     VARCHAR(150) NOT NULL,
+  research_topic   VARCHAR(255) NOT NULL,
+  grant_funded     BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_ra_assistantship
+    FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB;
+```
+
+8. `workload_change_record` (GREEN new table)
+```sql
+CREATE TABLE workload_change_record
+(
+  change_id        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  assistantship_id VARCHAR(15) NOT NULL,
+  change_date      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  old_hours        TINYINT UNSIGNED NOT NULL,
+  new_hours        TINYINT UNSIGNED NOT NULL,
+  changed_by       VARCHAR(50) NOT NULL,
+  reason           VARCHAR(255) NOT NULL,
+  CONSTRAINT fk_workload_assistantship
+    FOREIGN KEY (assistantship_id) REFERENCES assistantship(assistantship_id)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB;
 ```
 
 ### 5.3 Proof of DDL Execution (per target table)
-Execution was performed with:
+Execution command:
 ```bash
 docker exec -i assistantships-db-hw-3-mysql mysql -uroot -psecret < sql/step4_refined_schema.sql
 ```
 
-Resulting schema proof (table existence + table structures):
-```text
-SHOW TABLES;
-assistantship
-department
-duty
-research_assistantship
-student
-supervisor
-teaching_assistantship
-workload_change_record
+Execution artifacts used for proof:
+- `evidence/step4/show_tables.txt`
+- `evidence/step4/describe_department.txt`
+- `evidence/step4/describe_supervisor.txt`
+- `evidence/step4/describe_student.txt`
+- `evidence/step4/describe_assistantship.txt`
+- `evidence/step4/describe_duty.txt`
+- `evidence/step4/describe_teaching_assistantship.txt`
+- `evidence/step4/describe_research_assistantship.txt`
+- `evidence/step4/describe_workload_change_record.txt`
 
-DESCRIBE department;            -- PK: department_id
-DESCRIBE supervisor;            -- PK: supervisor_id, FK: department_id
-DESCRIBE student;               -- PK: student_id
-DESCRIBE assistantship;         -- PK: assistantship_id, includes assistantship_type
-DESCRIBE duty;                  -- PK: (assistantship_id, duty_id)
-DESCRIBE teaching_assistantship;-- PK/FK: assistantship_id
-DESCRIBE research_assistantship;-- PK/FK: assistantship_id
-DESCRIBE workload_change_record;-- PK: change_id, FK: assistantship_id
-```
+Per-table execution screenshots:
 
-(Full command output used in validation is preserved in session logs and reflected in this report.)
+`department`:
+![Step4 Department DDL](screenshots/step4/department_ddl_proof.png)
+
+`supervisor`:
+![Step4 Supervisor DDL](screenshots/step4/supervisor_ddl_proof.png)
+
+`student`:
+![Step4 Student DDL](screenshots/step4/student_ddl_proof.png)
+
+`assistantship`:
+![Step4 Assistantship DDL](screenshots/step4/assistantship_ddl_proof.png)
+
+`duty`:
+![Step4 Duty DDL](screenshots/step4/duty_ddl_proof.png)
+
+`teaching_assistantship`:
+![Step4 TA DDL](screenshots/step4/teaching_assistantship_ddl_proof.png)
+
+`research_assistantship`:
+![Step4 RA DDL](screenshots/step4/research_assistantship_ddl_proof.png)
+
+`workload_change_record`:
+![Step4 WCR DDL](screenshots/step4/workload_change_record_ddl_proof.png)
 
 ## 6. Step 5: Normalize Database to 3NF
 ### Inputs
@@ -337,10 +458,32 @@ Typical source fragment (non-1NF candidate):
 assistantship_before_1nf(assistantship_id, ..., duties_list)
 ```
 
+Conceptual/schema fragment illustration:
+```mermaid
+erDiagram
+  ASSISTANTSHIP_BEFORE_1NF {
+    string assistantship_id PK
+    string duties_list "non-atomic list"
+  }
+```
+
 Resulting 1NF fragment:
 ```text
 assistantship(assistantship_id, ...)
 duty(assistantship_id, duty_id, description)
+```
+
+```mermaid
+erDiagram
+  ASSISTANTSHIP ||--o{ DUTY : has
+  ASSISTANTSHIP {
+    string assistantship_id PK
+  }
+  DUTY {
+    string assistantship_id PK
+    int duty_id PK
+    string description
+  }
 ```
 
 Proof:
@@ -356,11 +499,42 @@ duty_before_2nf(assistantship_id, duty_id, description, student_name)
 ```
 where student_name depends only on assistantship_id, not full composite key.
 
+Conceptual/schema fragment illustration:
+```mermaid
+erDiagram
+  DUTY_BEFORE_2NF {
+    string assistantship_id PK
+    int duty_id PK
+    string description
+    string student_name "partial dependency"
+  }
+```
+
 Resulting 2NF fragment:
 ```text
 duty(assistantship_id, duty_id, description)
 student(student_id, first_name, last_name, ...)
 assistantship(assistantship_id, student_id, ...)
+```
+
+```mermaid
+erDiagram
+  STUDENT ||--o{ ASSISTANTSHIP : assigned
+  ASSISTANTSHIP ||--o{ DUTY : has
+  STUDENT {
+    int student_id PK
+    string first_name
+    string last_name
+  }
+  ASSISTANTSHIP {
+    string assistantship_id PK
+    int student_id FK
+  }
+  DUTY {
+    string assistantship_id PK
+    int duty_id PK
+    string description
+  }
 ```
 
 Proof:
@@ -376,10 +550,34 @@ supervisor_before_3nf(supervisor_id, department_id, department_name)
 ```
 where supervisor_id -> department_id -> department_name.
 
+Conceptual/schema fragment illustration:
+```mermaid
+erDiagram
+  SUPERVISOR_BEFORE_3NF {
+    int supervisor_id PK
+    int department_id
+    string department_name "transitive via department_id"
+  }
+```
+
 Resulting 3NF fragment:
 ```text
 supervisor(supervisor_id, ..., department_id)
 department(department_id, department_name, faculty_name)
+```
+
+```mermaid
+erDiagram
+  DEPARTMENT ||--o{ SUPERVISOR : contains
+  DEPARTMENT {
+    int department_id PK
+    string department_name
+    string faculty_name
+  }
+  SUPERVISOR {
+    int supervisor_id PK
+    int department_id FK
+  }
 ```
 
 Proof:
@@ -401,33 +599,68 @@ Conclusion: the refined schema is in 3NF.
 ### 7.1 Source Data and Population Queries
 Population queries are provided in `sql/step6_populate_data.sql` using INSERT statements per table source.
 
+Per-table source data blocks and population statements:
+1. `department`: INSERT block `-- 1. Department`
+2. `supervisor`: INSERT block `-- 2. Supervisor`
+3. `student`: INSERT block `-- 3. Student`
+4. `assistantship`: INSERT block `-- 4. Assistantship`
+5. `duty`: INSERT block `-- 5. Duty`
+6. `teaching_assistantship`: INSERT block `-- 6. Teaching_Assistantship`
+7. `research_assistantship`: INSERT block `-- 7. Research_Assistantship`
+8. `workload_change_record`: INSERT block `-- 8. WorkloadChangeRecord (NEW)`
+
 Execution command:
 ```bash
 docker exec -i assistantships-db-hw-3-mysql mysql -uroot -psecret < sql/step6_populate_data.sql
 ```
 
 ### 7.2 Population Proof and Table Results
-```text
-Tables_in_assistantships_db
-assistantship
-department
-duty
-research_assistantship
-student
-supervisor
-teaching_assistantship
-workload_change_record
+Execution artifacts used for proof:
+- `evidence/step6/populate_apply.log`
+- `evidence/step6/count_department.txt`
+- `evidence/step6/count_supervisor.txt`
+- `evidence/step6/count_student.txt`
+- `evidence/step6/count_assistantship.txt`
+- `evidence/step6/count_duty.txt`
+- `evidence/step6/count_teaching_assistantship.txt`
+- `evidence/step6/count_research_assistantship.txt`
+- `evidence/step6/count_workload_change_record.txt`
 
 Row counts after Step 6 load on clean DB:
-department: 10
-supervisor: 12
-student: 12
-assistantship: 12
-duty: 12
-teaching_assistantship: 7
-research_assistantship: 5
-workload_change_record: 3
-```
+- department: 10
+- supervisor: 12
+- student: 12
+- assistantship: 12
+- duty: 12
+- teaching_assistantship: 7
+- research_assistantship: 5
+- workload_change_record: 3
+
+Per-table population screenshots:
+
+`department`:
+![Step6 Department Population](screenshots/step6/department_population_proof.png)
+
+`supervisor`:
+![Step6 Supervisor Population](screenshots/step6/supervisor_population_proof.png)
+
+`student`:
+![Step6 Student Population](screenshots/step6/student_population_proof.png)
+
+`assistantship`:
+![Step6 Assistantship Population](screenshots/step6/assistantship_population_proof.png)
+
+`duty`:
+![Step6 Duty Population](screenshots/step6/duty_population_proof.png)
+
+`teaching_assistantship`:
+![Step6 TA Population](screenshots/step6/teaching_assistantship_population_proof.png)
+
+`research_assistantship`:
+![Step6 RA Population](screenshots/step6/research_assistantship_population_proof.png)
+
+`workload_change_record`:
+![Step6 WCR Population](screenshots/step6/workload_change_record_population_proof.png)
 
 ### 7.3 Why Loaded Data Is Sufficient for Testing
 | Table | Sufficiency for testing |
@@ -617,6 +850,35 @@ report_total_rows (sum of grouped allocation report) = 12
 contracts_rows (join-based contracts report) = 12
 ```
 
+Queries used for proof (see `sql/step9_tests.sql`):
+```sql
+SELECT COUNT(*) AS assistantship_rows FROM assistantship;
+
+SELECT SUM(x.total) AS report_total_rows
+FROM (
+  SELECT COUNT(*) AS total
+  FROM assistantship a
+  JOIN department d ON a.department_id = d.department_id
+  GROUP BY d.department_name, a.assistantship_type
+) x;
+
+SELECT COUNT(*) AS contracts_rows
+FROM (
+  SELECT a.assistantship_id
+  FROM assistantship a
+  JOIN student s ON a.student_id = s.student_id
+) q;
+```
+
+Additional workload-audit data proof query (same file):
+```sql
+SELECT change_id, assistantship_id, old_hours, new_hours, reason
+FROM workload_change_record
+WHERE assistantship_id = 'AST-2025-0001'
+ORDER BY change_id DESC
+LIMIT 1;
+```
+
 Argument of correctness:
 - R1 aggregation is correct because grouped totals sum to the base assistantship cardinality.
 - R2 is correct because latest workload audit row reflects the tested update (10 -> 18).
@@ -630,14 +892,18 @@ The Assistantships DBS was completed through all HW3 steps with traceable artifa
 - 3 required forms and 3 required reports integrated into the application,
 - reproducible Step 9 tests with before/after proofs for data-changing operations and report correctness checks.
 
-## 12. References
+## 12. Conclusion
+The implementation and report were updated and revalidated against the latest Lab 9/Lab 10 descriptions, HW3 guidelines, and grading penalties. In addition to functional verification, per-table visual proofs for Step 4 and Step 6 were added to reduce grading risk where penalties are applied per missing table-level evidence.
+
+## 13. References
 1. DB-HW3_Guidelines.md
 2. HW3 Grading Penalties by Steps.md
 3. Lab 9 materials (scoping, external views, harmonization)
 4. Lab 10 materials (schema refinement, normalization, population)
 5. Repository implementation artifacts in sql and src/main
+6. Repository URL: https://github.com/dark-neonus/db_hw_3_pasichnyk
 
-## 13. Annex
+## 14. Annex
 ### A. SQL Artifacts
 - `sql/step4_refined_schema.sql`
 - `sql/step6_populate_data.sql`
@@ -658,5 +924,11 @@ The Assistantships DBS was completed through all HW3 steps with traceable artifa
 - `src/main/resources/templates/report_contracts.html`
 
 ### C. Evidence Screenshots
+- Step 4: `screenshots/step4/`
+- Step 6: `screenshots/step6/`
 - Step 7: `screenshots/step7/`
 - Step 8: `screenshots/step8/`
+
+### D. Raw Execution Evidence
+- `evidence/step4/`
+- `evidence/step6/`

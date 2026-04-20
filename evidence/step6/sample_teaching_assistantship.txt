@@ -1,0 +1,5 @@
+AST-2025-0001	CS101	Introduction to Programming	1
+AST-2025-0003	SE201	Software Architecture	0
+AST-2025-0004	MA102	Linear Algebra	1
+AST-2025-0007	PL101	Intro to Philosophy	1
+AST-2025-0009	EC201	Macroeconomics	0

@@ -1,0 +1,5 @@
+1	Computer Science	Faculty of Applied Sciences
+2	Data Science	Faculty of Applied Sciences
+3	Software Engineering	Faculty of Applied Sciences
+4	Mathematics	Faculty of Natural Sciences
+5	Physics	Faculty of Natural Sciences

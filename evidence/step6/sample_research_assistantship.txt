@@ -1,0 +1,5 @@
+AST-2025-0002	Deep Learning on Edge	Model Quantization	1
+AST-2025-0005	Quantum Optics Lab	Photon Entanglement	1
+AST-2025-0006	Modern Ukrainian History Archiving	Digital Preservation	0
+AST-2025-0008	Cognitive Overload Study	Attention Span Metrics	1
+AST-2025-0012	Multilingual LLM Training	Zero-shot Translation	0

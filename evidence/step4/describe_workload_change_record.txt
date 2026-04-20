@@ -1,0 +1,7 @@
+change_id	int unsigned	NO	PRI	NULL	auto_increment
+assistantship_id	varchar(15)	NO	MUL	NULL	
+change_date	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+old_hours	tinyint unsigned	NO		NULL	
+new_hours	tinyint unsigned	NO		NULL	
+changed_by	varchar(50)	NO		NULL	
+reason	varchar(255)	NO		NULL	

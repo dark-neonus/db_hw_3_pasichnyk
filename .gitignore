@@ -1,4 +1,7 @@
-.gradle
-build
-data
-gradle
+.gradle/
+build/
+data/
+
+# Intermediate HTML files used to render evidence screenshots
+screenshots/step4/html/
+screenshots/step6/html/

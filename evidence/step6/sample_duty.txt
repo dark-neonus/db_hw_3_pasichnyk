@@ -1,0 +1,5 @@
+AST-2025-0001	1	Grading assignments
+AST-2025-0002	1	Data cleaning and preprocessing
+AST-2025-0003	1	Assisting in labs
+AST-2025-0004	1	Grading quizzes
+AST-2025-0005	1	Setting up lab equipment

@@ -1,0 +1,9 @@
+assistantship_id	varchar(15)	NO	PRI	NULL	
+registration_number	varchar(20)	NO	UNI	NULL	
+semester	enum('Fall','Spring','Summer')	NO		NULL	
+academic_year	varchar(9)	NO		NULL	
+hours_per_week	tinyint unsigned	NO		NULL	
+assistantship_type	enum('TA','RA')	NO		NULL	
+student_id	int unsigned	NO	MUL	NULL	
+supervisor_id	int unsigned	NO	MUL	NULL	
+department_id	int unsigned	NO	MUL	NULL	

@@ -1,0 +1,4 @@
+assistantship_id	varchar(15)	NO	PRI	NULL	
+course_code	varchar(20)	NO		NULL	
+course_name	varchar(100)	NO		NULL	
+grading_responsibility	tinyint(1)	NO		0	

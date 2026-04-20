@@ -70,3 +70,18 @@
 - Removed one residual injected sentence in Step 2 of `Assistantships_Pasichnyk.md`.
 - Removed an accidentally appended duplicate old report block (`# Databases Course` second occurrence) so the file is a single coherent version.
 - Re-ran contamination checks, report-structure scan, and compile validation.
+
+## 2026-04-20 | Compliance Re-Audit Against Updated Lab 9/10 and Grading
+- Compared updated requirements documents through git history (`ee465c2` -> `5d18d4a`) and rebuilt the compliance checklist.
+- Re-executed Step 4 schema and Step 6 population on Docker MySQL; generated raw evidence under `evidence/step4/` and `evidence/step6/`.
+- Added per-table Step 4 screenshots in `screenshots/step4/` and per-table Step 6 screenshots in `screenshots/step6/`.
+- Updated `Assistantships_Pasichnyk.md` to include: repository URL, per-table DDL proofs, per-table population proofs, and explicit `Conclusion` section.
+- Updated `README.md` with reproducible Step 9 test command and references to new Step 4/6 evidence artifacts.
+- Cleaned repository structure by removing accidentally nested `db-hw-3-template` directory.
+- Updated `.gitignore` to keep caches out while allowing Gradle wrapper files and ignoring intermediate screenshot HTML pages.
+- Set executable bit for `sql/step9_run_tests.sh` and refreshed `sql/step9_test_execution.log` using live app execution.
+
+## 2026-04-20 | Final Rubric-Risk Hardening Pass
+- Added explicit Step 4 DDL queries for each target table directly in report section 5.2 (not only file references).
+- Added visual source/resulting schema fragments (mermaid) for 1NF, 2NF, and 3NF in report section 6.
+- Updated `FIX.md` with this last evidence-hardening change for traceability.

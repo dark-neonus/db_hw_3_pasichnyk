@@ -1,0 +1,3 @@
+assistantship_id	varchar(15)	NO	PRI	NULL	
+duty_id	smallint unsigned	NO	PRI	NULL	
+description	varchar(255)	NO		NULL	

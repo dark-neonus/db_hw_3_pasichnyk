@@ -1,0 +1,3 @@
+department_id	int unsigned	NO	PRI	NULL	auto_increment
+department_name	varchar(100)	NO		NULL	
+faculty_name	varchar(100)	NO		NULL	

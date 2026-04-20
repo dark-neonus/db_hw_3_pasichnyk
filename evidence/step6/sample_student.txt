@@ -1,0 +1,5 @@
+1	Ivan	Petrenko	ivan.petrenko@ucu.edu.ua	2023-09-01	Computer Science BSc
+2	Anna	Shevchuk	anna.shevchuk@ucu.edu.ua	2022-09-01	Data Science MSc
+3	Taras	Boyko	taras.boyko@ucu.edu.ua	2023-09-01	Software Engineering BSc
+4	Olha	Koval	olha.koval@ucu.edu.ua	2021-09-01	Mathematics MSc
+5	Mykola	Savchuk	mykola.savchuk@ucu.edu.ua	2024-09-01	Physics BSc
