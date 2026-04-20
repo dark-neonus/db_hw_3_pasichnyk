@@ -1,3 +1,19 @@
+---
+script:
+  - url: https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
+  - path: ./scripts/md-to-pdf-mermaid.js
+css: |-
+  .mermaid {
+    margin: 12px 0;
+    text-align: center;
+  }
+
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+---
+
 # Databases Course
 ## Homework 3 Report
 ## Variant: Assistantships
@@ -896,8 +912,8 @@ The Assistantships DBS was completed through all HW3 steps with traceable artifa
 The implementation and report were updated and revalidated against the latest Lab 9/Lab 10 descriptions, HW3 guidelines, and grading penalties. In addition to functional verification, per-table visual proofs for Step 4 and Step 6 were added to reduce grading risk where penalties are applied per missing table-level evidence.
 
 ## 13. References
-1. DB-HW3_Guidelines.md
-2. HW3 Grading Penalties by Steps.md
+1. DB-HW3_Guidelines.pdf
+2. HW3 Grading Penalties by Steps.pdf
 3. Lab 9 materials (scoping, external views, harmonization)
 4. Lab 10 materials (schema refinement, normalization, population)
 5. Repository implementation artifacts in sql and src/main
