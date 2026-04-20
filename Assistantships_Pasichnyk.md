@@ -901,7 +901,7 @@ Argument of correctness:
 - R3 is correct because one contract row is generated per assistantship in the joined data.
 
 ## 11. Summary
-The Assistantships DBS was completed through all HW3 steps with traceable artifacts and executed evidence:
+The Assistantships DBS was completed through all HW3 steps with traceble artifacts and executed evidence:
 - stakeholder-scoped modeling,
 - schema refinement and 3NF proofs,
 - populated data sufficient for functional tests,
