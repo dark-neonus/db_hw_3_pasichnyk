@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +13,17 @@
         <form class="main-form" action="/assistantships/update" method="post">
             <div class="form-group">
                 <label>Assistantship ID:</label>
-                <input type="text" name="id" placeholder="AST-YYYY-NNNN" required>
+                <select name="id" required>
+                    <option value="" disabled selected>Select assistantship</option>
+                    <option th:each="a : ${assistantships}"
+                            th:value="${a.assistantship_id}"
+                            th:text="${a.assistantship_id + ' (current: ' + a.hours_per_week + 'h)'}">
+                    </option>
+                </select>
             </div>
             <div class="form-group">
                 <label>New Hours Per Week:</label>
-                <input type="number" name="newHours" required>
+                <input type="number" name="newHours" min="1" max="40" required>
             </div>
             <div class="form-group">
                 <label>Staff Approving:</label>

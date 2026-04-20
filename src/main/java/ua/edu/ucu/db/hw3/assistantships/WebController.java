@@ -3,6 +3,7 @@ package ua.edu.ucu.db.hw3.assistantships;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -34,6 +35,7 @@ public class WebController {
     }
 
     // Form 2: Delete Student
+    @Transactional
     @PostMapping("/students/delete")
     public String deleteStudent(@RequestParam int id) {
         // Because ON DELETE RESTRICT is set globally from HW2, we must manually delete child records.
@@ -53,10 +55,24 @@ public class WebController {
         return "workload_update";
     }
 
+    @Transactional
     @PostMapping("/assistantships/update")
     public String updateWorkloadSubmit(@RequestParam String id, @RequestParam int newHours, @RequestParam String user, @RequestParam String reason) {
-        // Fetch old hours
-        Integer oldHours = jdbcTemplate.queryForObject("SELECT hours_per_week FROM assistantship WHERE assistantship_id = ?", Integer.class, id);
+        if (newHours < 1 || newHours > 40) {
+            return "redirect:/assistantships/update";
+        }
+
+        List<Integer> oldHoursRows = jdbcTemplate.query(
+            "SELECT hours_per_week FROM assistantship WHERE assistantship_id = ?",
+            (rs, rowNum) -> rs.getInt(1),
+            id
+        );
+
+        if (oldHoursRows.isEmpty()) {
+            return "redirect:/assistantships/update";
+        }
+
+        Integer oldHours = oldHoursRows.get(0);
         
         // Update assistantship
         jdbcTemplate.update("UPDATE assistantship SET hours_per_week = ? WHERE assistantship_id = ?", newHours, id);

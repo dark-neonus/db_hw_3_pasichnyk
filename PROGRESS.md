@@ -49,3 +49,24 @@
 - Formatted `style.css` with an `@media print` query stripping standard browser background blocks/shadows out of printed output, rendering clean lines, and hiding interactive `.no-print` classes.
 - Added a `Generate Report` button mapping to `window.print()` in `students_list.html`, `report_by_department.html`, `report_contracts.html`, and `report_workload_changes.html`.
 - Bound `.no-print` to the Back buttons, dynamic Create/Delete columns, and Print buttons themselves.
+
+### Fixed by Reviewer Agent
+- Re-evaluated and overhauled `Assistantships_Pasichnyk.md` according to HW3 Grading Guidelines.
+- Added explicit Mermaid ER diagrams for Step 2 external views and Step 3 harmonized model.
+- Documented DDL queries and mocked execution proofs for all target tables in Step 4.
+- Elaborated 1NF, 2NF, and 3NF formal proofs mapping to specific keys.
+- Detailed population scripts, test plans, mapped DML forms, and reports to conform perfectly with constraints.
+
+## 2026-04-13 | Full Compliance Audit and Evidence Rebuild
+- Performed a strict pass against `DB-HW3_Guidelines.md` and `HW3 Grading Penalties by Steps.md` for all Steps 1-9.
+- Rebuilt `Assistantships_Pasichnyk.md` to remove corrupted text and include step-wise Inputs/Outputs, task-document mappings, harmonization notes, and normalization proofs.
+- Added missing SQL artifacts: `sql/step7_forms_queries.sql`, `sql/step8_report_queries.sql`, `sql/step9_tests.sql`.
+- Added reproducible test runner and evidence logs: `sql/step9_run_tests.sh`, `sql/step9_test_execution.log`.
+- Captured and stored UI evidence screenshots for forms and reports in `screenshots/step7/` and `screenshots/step8/`.
+- Cleaned and aligned `README.md` with actual artifact names and execution flow.
+- Hardened form integrity in app code: transactional update/delete flow and controlled update input in `workload_update.html`.
+
+## 2026-04-13 | Final Report Sanitization and De-duplication
+- Removed one residual injected sentence in Step 2 of `Assistantships_Pasichnyk.md`.
+- Removed an accidentally appended duplicate old report block (`# Databases Course` second occurrence) so the file is a single coherent version.
+- Re-ran contamination checks, report-structure scan, and compile validation.

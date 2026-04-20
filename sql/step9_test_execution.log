@@ -1,0 +1,68 @@
+=== TEST 1: INSERT FORM (students/add) ===
+T1_BEFORE_COUNT
+mysql: [Warning] Using a password on the command line interface can be insecure.
+0
+T1_HTTP 302
+T1_AFTER_ROW
+mysql: [Warning] Using a password on the command line interface can be insecure.
+13	Step9	Insert	step9.insert@ucu.edu.ua
+=== TEST 2: UPDATE FORM (assistantships/update) ===
+T2_BEFORE_ASSISTANTSHIP
+mysql: [Warning] Using a password on the command line interface can be insecure.
+AST-2025-0001	10
+T2_BEFORE_LAST_LOG
+mysql: [Warning] Using a password on the command line interface can be insecure.
+1	AST-2025-0001	10	15	Increased class size requires more grading time
+T2_HTTP 302
+T2_AFTER_ASSISTANTSHIP
+mysql: [Warning] Using a password on the command line interface can be insecure.
+AST-2025-0001	18
+T2_AFTER_LAST_LOG
+mysql: [Warning] Using a password on the command line interface can be insecure.
+4	AST-2025-0001	10	18	Step9 update verification
+=== TEST 3: DELETE FORM (students/delete) ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+T3_TARGET_ID 14
+T3_BEFORE_STUDENT
+mysql: [Warning] Using a password on the command line interface can be insecure.
+1
+T3_BEFORE_ASSISTANTSHIP
+mysql: [Warning] Using a password on the command line interface can be insecure.
+1
+T3_BEFORE_DUTY
+mysql: [Warning] Using a password on the command line interface can be insecure.
+1
+T3_BEFORE_TA
+mysql: [Warning] Using a password on the command line interface can be insecure.
+1
+T3_BEFORE_WCR
+mysql: [Warning] Using a password on the command line interface can be insecure.
+1
+T3_HTTP 302
+T3_AFTER_STUDENT
+mysql: [Warning] Using a password on the command line interface can be insecure.
+0
+T3_AFTER_ASSISTANTSHIP
+mysql: [Warning] Using a password on the command line interface can be insecure.
+0
+T3_AFTER_DUTY
+mysql: [Warning] Using a password on the command line interface can be insecure.
+0
+T3_AFTER_TA
+mysql: [Warning] Using a password on the command line interface can be insecure.
+0
+T3_AFTER_WCR
+mysql: [Warning] Using a password on the command line interface can be insecure.
+0
+=== REPORT VALIDATION CHECKS ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+12
+mysql: [Warning] Using a password on the command line interface can be insecure.
+12
+mysql: [Warning] Using a password on the command line interface can be insecure.
+12
